@@ -1,0 +1,78 @@
+///============================================================================
+// 						To Do
+//=============================================================================
+
+jadobe.cmd() - accept a string
+
+tokenizer - built in tokenizer
+
+jadobe.extend() - extend Jadobe
+	add the command to the list
+	pre-tokenize the string
+	initilization function
+	completion function
+	execution function
+
+
+///============================================================================
+// 						CORE COMMANDS
+//=============================================================================
+
+tee: allows you to redirect output to the console and destination file
+env: enter an environment. Commands are then handled by the environment (ie, regular Jadobe commands 
+		aren't executed, unless the environment also includes similar commands)
+
+
+
+///============================================================================
+// 						STRUCTURE
+//=============================================================================
+
+Use ' ' when entering strings with spaces. Quotes anywhere in the command line is illegal.
+
+command [parameters] [source] [destination] [ > | >> | < | \| | &] [source]
+
+> is used to redirect output to destination (can be a file or DOM object). Destination gets clobbered.
+
+>> is used to appened output to destination.
+
+< executes the command with the source used as input
+
+| run two commands together. Command 1 gets executed, with its output used as input for command2
+
+& chain commands
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// 						EXAMPLES
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+command1
+executes command1
+
+command1 -o
+executes command1 with option o
+
+command1 > file
+executes command1 and clobbers outputs to file
+
+command1 < source >> file
+executes command1 using source as input and appends output to file
+
+command1 | command2
+is similar as doing the following:
+	command1 > file
+	command2 < file
+
+
+///============================================================================
+// 						Kickstarter
+//=============================================================================
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// 						Gifts
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+$5 
+$10
+$25
+$50
+$
