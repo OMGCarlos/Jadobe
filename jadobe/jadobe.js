@@ -34,6 +34,9 @@
 
 
 /*###########################################################################*/
+
+
+
 var JADOBE_ENVIRONMENT = window,	//Change to match your environments global object:
 										//window 	= Web Browsers
 	JADOBE_CONSOLE_LOG = console.log; 	//The environments console display function
@@ -69,6 +72,12 @@ var JADOBE_ENVIRONMENT = window,	//Change to match your environments global obje
 		return tokenize(cmd);
 	};
 
+
+
+/*###########################################################################*/
+
+
+
 	///============================================================================
 	// Console Log
 	// Takes into account the various environments
@@ -78,7 +87,14 @@ var JADOBE_ENVIRONMENT = window,	//Change to match your environments global obje
 	//=============================================================================
 	jadobe.log = function(){
 		if(arguments.length > 0) logHistory.push(arguments);
-		if(JADOBE_ENVIRONMENT.console) console.log(arguments);
+		if(JADOBE_ENVIRONMENT.console) {
+			switch(arguments.length){
+				case 1: console.log(arguments[0]); break;
+				case 2: console.log(arguments[0], arguments[1]); break;
+				case 3: console.log(arguments[0], arguments[1], arguments[2]); break;
+				default: console.log(arguments); break;
+			}
+		}
 		return true;
 	}
 
@@ -89,7 +105,12 @@ var JADOBE_ENVIRONMENT = window,	//Change to match your environments global obje
 	jadobe.warning = function(){
 		if(!jadobe.debug.warnings) return false;
 		else{
-			jadobe.log(arguments);
+			switch(arguments.length){
+				case 1: jadobe.log(arguments[0]); break;
+				case 2: jadobe.log(arguments[0], arguments[1]); break;
+				case 3: jadobe.log(arguments[0], arguments[1], arguments[2]); break;
+				default: jadobe.log(arguments); break;
+			}
 			return true;
 		}
 	}
@@ -101,7 +122,12 @@ var JADOBE_ENVIRONMENT = window,	//Change to match your environments global obje
 	jadobe.notice = function(){
 		if(!jadobe.debug.notices) return false;
 		else{
-			jadobe.log(arguments);
+			switch(arguments.length){
+				case 1: jadobe.log(arguments[0]); break;
+				case 2: jadobe.log(arguments[0], arguments[1]); break;
+				case 3: jadobe.log(arguments[0], arguments[1], arguments[2]); break;
+				default: jadobe.log(arguments); break;
+			}
 			return true;
 		}
 	}
@@ -152,9 +178,10 @@ var JADOBE_ENVIRONMENT = window,	//Change to match your environments global obje
 					nextQuote = substr.indexOf("'");	//Look for the next instance of a single quote
 
 				///============================================================================
-				// Error, closing quote not found
+				// Warning, closing quote not found
 				//=============================================================================
 				if(nextQuote === -1){
+					jadobe.warning('OOps');
 					return false;
 				}
 
