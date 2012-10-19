@@ -47,14 +47,23 @@ var JADOBE_ENVIRONMENT = window,	//Change to match your environments global obje
 	//=============================================================================
 	var	logHistory = [];	//Stores a history of console logs
 
+	///============================================================================
+	// Public Properties
+	//=============================================================================
+	jadobe.debug = {
+		warnings: 	true,	//Display warnings?
+		notices: 	true 	//Display notices?
+	}
 
+
+/*###########################################################################*/
 
 
 	///============================================================================
 	// Command Line
 	// 
-	// Params:  STRING 	 	cmd 	Command to parse
-	// Returns: BOOLEAN 	true/false (success/fail)	
+	// Arguments: 	STRING 	 	cmd 	Command to parse
+	// Returns: 	BOOLEAN 	true/false (success/fail)	
 	//=============================================================================
 	jadobe.cmd = function(cmd){
 		return tokenize(cmd);
@@ -63,13 +72,40 @@ var JADOBE_ENVIRONMENT = window,	//Change to match your environments global obje
 	///============================================================================
 	// Console Log
 	// Takes into account the various environments
+	// 
+	// Arguments: 	Various 	Can take in any number of arguments of any type
+	// Returns: 	True
 	//=============================================================================
 	jadobe.log = function(){
 		if(arguments.length > 0) logHistory.push(arguments);
 		if(JADOBE_ENVIRONMENT.console) console.log(arguments);
 		return true;
 	}
-	
+
+	///============================================================================
+	// Throws warning to the console
+	// Returns: 	jadobe.debug.warnings
+	//=============================================================================
+	jadobe.warning = function(){
+		if(!jadobe.debug.warnings) return false;
+		else{
+			jadobe.log(arguments);
+			return true;
+		}
+	}
+
+	///============================================================================
+	// Throws warning to the console
+	// Returns: 	jadobe.debug.warnings
+	//=============================================================================
+	jadobe.notice = function(){
+		if(!jadobe.debug.notices) return false;
+		else{
+			jadobe.log(arguments);
+			return true;
+		}
+	}
+
 	///============================================================================
 	// Display entire console history
 	//=============================================================================
@@ -88,10 +124,49 @@ var JADOBE_ENVIRONMENT = window,	//Change to match your environments global obje
 	///============================================================================
 	// Tokenize a string
 	// 
-	// Params:  STRING 		str 	String to tokenize
-	// Returns: ARRAY 		tokens 	Array containing the tokens
+	// Arguments: 	STRING 		str 	String to tokenize
+	// Returns: 	ARRAY 		tokens 	Array containing the tokens
 	//=============================================================================
 	function tokenize(str){
+		var tokens = [],	
+			token = '',		//Each loop adds a character to token, until a deliminator is met
+			chr = '';		//Stores the current character
+
+		for(var i = 0; i < str.length; i ++){
+			chr = str[i];
+
+			///============================================================================
+			// Add token when a space is met
+			//=============================================================================
+			if(chr === ' '){
+				tokens.push(token);
+				chr = '';
+				token = '';
+			}
+
+			///============================================================================
+			// Group single quotes
+			//=============================================================================
+			if(chr === "'"){
+				var substr = str.substring(i+1),			//"slice" the string at the current position
+					nextQuote = substr.indexOf("'");	//Look for the next instance of a single quote
+
+				///============================================================================
+				// Error, closing quote not found
+				//=============================================================================
+				if(nextQuote === -1){
+					return false;
+				}
+
+				chr = '';
+				token = '';
+			}
+
+			//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+			// Add the token to the character
+			//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+			token += chr;
+		}
 
 		return str
 	}
@@ -104,8 +179,8 @@ var JADOBE_ENVIRONMENT = window,	//Change to match your environments global obje
 	///============================================================================
 	// Checks if an object is empty
 	// 
-	// Params: OBJECT 		obj 	The obejct to check
-	// Returns: BOOLEAN 	True if empty, false if not
+	// Arguments: 	OBJECT 		obj 	The obejct to check
+	// Returns: 	BOOLEAN 	True if empty, false if not
 	//=============================================================================
 	function isEmpty(obj){
 		for(var prop in obj){return false;} return true;
