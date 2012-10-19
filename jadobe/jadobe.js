@@ -154,21 +154,14 @@ var JADOBE_ENVIRONMENT = window,	//Change to match your environments global obje
 	// Returns: 	ARRAY 		tokens 	Array containing the tokens
 	//=============================================================================
 	function tokenize(str){
+		str = str.toString();	//This MUST be a string, or weird things could happen
+
 		var tokens = [],	
 			token = '',		//Each loop adds a character to token, until a deliminator is met
 			chr = '';		//Stores the current character
 
 		for(var i = 0; i < str.length; i ++){
 			chr = str[i];
-
-			///============================================================================
-			// Add token when a space is met
-			//=============================================================================
-			if(chr === ' '){
-				tokens.push(token);
-				chr = '';
-				token = '';
-			}
 
 			///============================================================================
 			// Group single quotes
@@ -181,21 +174,36 @@ var JADOBE_ENVIRONMENT = window,	//Change to match your environments global obje
 				// Warning, closing quote not found
 				//=============================================================================
 				if(nextQuote === -1){
-					jadobe.warning('OOps');
+					jadobe.warning('Warning 001: Single quote used at position ', i, ' with no closing quote!');
 					return false;
 				}
 
 				chr = '';
 				token = '';
+				tokens.push(substr.substring(0, nextQuote));
+				i += ++nextQuote;	//Skip to this position
 			}
 
 			//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			// Add the token to the character
+			// Add token when a space is met
 			//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+			if(chr === ' '){
+				if(token.replace(/\s/g, "") !== '') tokens.push(token);
+				chr = '';
+				token = '';
+			}
+			//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+			// Add token when end of string is reached
+			//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+			if(i === str.length-1){
+				if(chr === ' ') chr = '';
+				if(token.replace(/\s/g, "") !== '') tokens.push(token + chr);
+			}
+
 			token += chr;
 		}
 
-		return str
+		return tokens
 	}
 
 
