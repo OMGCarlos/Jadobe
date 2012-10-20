@@ -64,7 +64,11 @@ var JADOBE_ENVIRONMENT = window,		//Change to match your environments global obj
 	// Returns: 	BOOLEAN 	true/false (success/fail)	
 	//=============================================================================
 	jadobe.cmd = function(cmd){
-		return tokenize(cmd);
+		var tokens = tokenize(cmd);
+		console.log(tokens);
+
+
+		return true;
 	};
 
 
@@ -137,8 +141,8 @@ var JADOBE_ENVIRONMENT = window,		//Change to match your environments global obj
 		///============================================================================
 		// Initialize function, or return an error if the initializer fails
 		//=============================================================================
-		if(initialize && typeof cmd.initialize !== 'undefined'){
-			var warning = cmd.initialize();
+		if(initialize && typeof cmd.init !== 'undefined'){
+			var warning = cmd.init();
 			if(typeof warning === 'string'){
 				jadobe.warning('Warning 003: Failed to extend Jadobe during initialization > ', cmd.command, warning);
 				return false;
