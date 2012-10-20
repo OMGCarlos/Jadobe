@@ -27,9 +27,10 @@
 
 
 
-var JADOBE_ENVIRONMENT = window,	//Change to match your environments global object:
-										//window 	= Web Browsers
+var JADOBE_ENVIRONMENT = window,		//Change to match your environments global object:
+											//window = Web Browsers
 	JADOBE_CONSOLE_LOG = console.log; 	//The environments console display function
+											//console.log = Web Browser
 
 ///============================================================================
 // Let's effin do this!
