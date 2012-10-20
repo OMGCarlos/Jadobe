@@ -19,16 +19,6 @@
 |	...unless you contribute! Add a pull request here: 
 |	https://github.com/OMGCarlos/Jadobe
 |
-|******************************************************************************
-|
-|	If you'd like to help out, but not sure where to start, simply search for
-|	one of the following strings and see if you can help me out:
-|	
-|	SEARCH STRING 		| COUNT	| DESCRIPTION
-|______________________________________________________________________________
-|	#QUESTION 			|   0	| Inline questions.
-|	#TODO				|   0	| To be done whenever
-|	#TODO-NEXT			|   0	| To be done immediately
 =============================================================================*/
 
 
@@ -48,14 +38,18 @@ var JADOBE_ENVIRONMENT = window,	//Change to match your environments global obje
 	///============================================================================
 	// Private Properties
 	//=============================================================================
-	var	logHistory = [];	//Stores a history of console logs
+	var	logHistory = [],	//Stores a history of console logs
+		commands = [];		//Stores a collection of command objects
 
 	///============================================================================
 	// Public Properties
 	//=============================================================================
 	jadobe.debug = {
-		warnings: 	true,	//Display warnings?
-		notices: 	true 	//Display notices?
+		warnings: 	true,			//Display warnings?
+		notices: 	true 			//Display notices?
+	}
+	jadobe.security = {
+		protectCommands: false 		//Prevent overwritting existing commands?
 	}
 
 
@@ -73,9 +67,118 @@ var JADOBE_ENVIRONMENT = window,	//Change to match your environments global obje
 	};
 
 
-
 /*###########################################################################*/
 
+
+	///============================================================================
+	// Extend Jadobe
+	// 
+	// Arguments: 	OBJECT/FUNCTION 	cmd 	The extending command
+	// Returns: 	BOOLEAN 			pass/fail
+	//=============================================================================
+	jadobe.extend = function(cmd){
+		if(typeof cmd === 'undefined') return false;
+
+		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		// Make sure we get an object
+		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		if(typeof cmd === 'function') cmd = cmd();	//Extract object from function
+		if(typeof cmd !== 'object'){
+			jadobe.warning('Warning 002: Failed to extend Jadobe with > ', cmd);
+			return false;
+		}
+		///============================================================================
+		// Make sure we have required methods/properties
+		//=============================================================================
+		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		// Command
+		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		if(typeof cmd.command === 'undefined') {
+			jadobe.warning('Warning 004: Failed to extend Jadobe. The "command" property is missing.');
+			return false;
+		}
+		if(typeof cmd.command !== 'string') {
+			cmd.command = cmd.command.toString();
+			jadobe.notice('Notice 001: Extending with a non-string command > ', cmd.command);
+			return false;
+		}
+		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		// Run
+		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		if(typeof cmd.run === 'undefined'){
+			jadobe.warning('Warning 005: Failed to extend Jadobe. Missing method "run".');
+			return false;
+		}
+
+		///============================================================================
+		// Tokenize the command
+		//=============================================================================
+		cmd.tokens = tokenize(cmd.command);
+
+		///============================================================================
+		// Set default values
+		//=============================================================================
+		if(typeof cmd.protected === 'undefined') cmd.protected = false;
+
+		///============================================================================
+		// Check if the command exists, and if it does, replace it
+		//=============================================================================
+		var isDuplicate = false,	//Does a duplicate command exist?
+			initialize = true;		//Should we call the initialize function? This is set to false if a warning 
+										//gets issued when checking for duplicates
+		for(var i = 0; i < commands.length; i++){
+			if(commands[i].command === cmd.tokens[0]){
+				isDuplicate = true;
+				break;
+			}
+		}
+
+		///============================================================================
+		// Initialize function, or return an error if the initializer fails
+		//=============================================================================
+		if(initialize && typeof cmd.initialize !== 'undefined'){
+			var warning = cmd.initialize();
+			if(typeof warning === 'string'){
+				jadobe.warning('Warning 003: Failed to extend Jadobe during initialization > ', cmd.command, warning);
+				return false;
+			}
+		}
+
+		///============================================================================
+		// Add the command
+		//=============================================================================
+		if(!isDuplicate) commands.push(cmd);
+		else{
+			//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+			// Warning if this command is protected
+			//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+			if(commands[i].protected || jadobe.security.protectCommands){
+				jadobe.warning('Warning 006: Command cannot be overwritten > ', commands[i].command);
+				initialize = false;
+			//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+			// ...notice if not
+			//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+			} else {
+				jadobe.notice('Notice 002: Command overwritten > ', commands[i].command);
+				commands[i] = cmd;
+			}			
+		}
+
+		///============================================================================
+		// Execute the loaded script
+		//=============================================================================
+		if(typeof cmd.loaded !== 'undefined'){
+			var notice = cmd.loaded();
+			if(typeof notice === 'string'){
+				jadobe.notice('Notice 003: Error when calling the loading script for ' + cmd.tokens[0] + ' > ', notice);
+			}
+		}
+
+		return true;
+	}
+
+
+/*###########################################################################*/
 
 
 	///============================================================================

@@ -2,10 +2,6 @@
 // 						To Do
 //=============================================================================
 
-jadobe.cmd() - accept a string
-
-tokenizer - built in tokenizer
-
 jadobe.extend() - extend Jadobe
 	add the command to the list
 	pre-tokenize the string
