@@ -51,7 +51,7 @@ var JADOBE_ENVIRONMENT = window,		//Change to match your environments global obj
 	}
 	jadobe.security = {
 		protectCommands: false, 		//Prevent overwritting existing commands?
-		strictMode: false
+		strictMode: true
 	}
 
 
@@ -292,12 +292,14 @@ var JADOBE_ENVIRONMENT = window,		//Change to match your environments global obj
 		///============================================================================
 		// Execute the loaded script
 		//=============================================================================
-		if(typeof cmd.loaded !== 'undefined'){
-			var notice = cmd.loaded();
-			if(typeof notice === 'string'){
-				jadobe.notice('Notice 003: Error when calling the loading script for ' + cmd.tokens[0] + ' > ', notice);
+		contentLoaded(window, function(){
+			if(typeof cmd.loaded !== 'undefined'){
+				var notice = cmd.loaded();
+				if(typeof notice === 'string'){
+					jadobe.notice('Notice 003: Error when calling the loading script for ' + cmd.tokens[0] + ' > ', notice);
+				}
 			}
-		}
+		});
 
 		return true;
 	}
@@ -431,13 +433,51 @@ var JADOBE_ENVIRONMENT = window,		//Change to match your environments global obj
 			token += chr;
 		}
 
-		return tokens
+		return tokens;
 	}
 
 
 
 /*###########################################################################*/
 
+	
+	///============================================================================
+	// Content loaded
+	// https://github.com/dperini/ContentLoaded/blob/master/src/contentloaded.js
+	//=============================================================================
+	function contentLoaded(win, fn) {
+
+		var done = false, top = true,
+
+		doc = win.document, root = doc.documentElement,
+
+		add = doc.addEventListener ? 'addEventListener' : 'attachEvent',
+		rem = doc.addEventListener ? 'removeEventListener' : 'detachEvent',
+		pre = doc.addEventListener ? '' : 'on',
+
+		init = function(e) {
+			if (e.type == 'readystatechange' && doc.readyState != 'complete') return;
+			(e.type == 'load' ? win : doc)[rem](pre + e.type, init, false);
+			if (!done && (done = true)) fn.call(win, e.type || e);
+		},
+
+		poll = function() {
+			try { root.doScroll('left'); } catch(e) { setTimeout(poll, 50); return; }
+			init('poll');
+		};
+
+		if (doc.readyState == 'complete') fn.call(win, 'lazy');
+		else {
+			if (doc.createEventObject && root.doScroll) {
+				try { top = !win.frameElement; } catch(e) { }
+				if (top) poll();
+			}
+			doc[add](pre + 'DOMContentLoaded', init, false);
+			doc[add](pre + 'readystatechange', init, false);
+			win[add](pre + 'load', init, false);
+		}
+
+	}
 
 
 	///============================================================================

@@ -20,14 +20,29 @@
 |		* Enter commands through the URL
 |
 =============================================================================*/
+
+///============================================================================
+// Runs the browser query string on load
+// 
+// Todo:
+// Multiple jadobe keys. Really, they should all be concacted in a single field,
+// 		but this would be more robust.
+//=============================================================================
 jadobe.extend({
-	command: 'test test1',
-	flags: 'test3',
-	help: 'Echos out hello world',
-	run: function(obj){
-		//console.log(obj);
-		//console.log('hello world');
+	command: 'runquerystring run?$',
+	help: 'Scans the URL for a query string key labeled "jadobe" and executes its value as the command line',
+	loaded: function(){
+		///============================================================================
+		// Grab the command line from the query
+		//=============================================================================
+	    var queryString = RegExp('[?&]jadobe=([^&]*)')
+	                    .exec(window.location.search);
+        if(queryString) {
+        	jadobe.cmd(decodeURIComponent(queryString[1].replace(/\+/g, ' ')));
+        	return true;
+        } else return false;
 	},
-	init: function(){console.log('Initializing command'); },
-	loaded: function(){console.log('finished')}
+	run: function(){
+		return this.loaded;
+	}
 });
