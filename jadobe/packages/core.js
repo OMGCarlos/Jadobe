@@ -1,7 +1,9 @@
 jadobe.extend({
-	command: 'test',
-	run: function(){
-		console.log('hello world!');
+	command: 'test test1',
+	flags: 'test3',
+	run: function(obj){
+		console.log(obj);
 	},
-	init: function(){console.log('Initializing command'); }
+	init: function(){console.log('Initializing command'); },
+	loaded: function(){console.log('finished')}
 });

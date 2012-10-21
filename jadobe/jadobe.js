@@ -50,7 +50,8 @@ var JADOBE_ENVIRONMENT = window,		//Change to match your environments global obj
 		notices: 	true 			//Display notices?
 	}
 	jadobe.security = {
-		protectCommands: false 		//Prevent overwritting existing commands?
+		protectCommands: false, 		//Prevent overwritting existing commands?
+		strictMode: false
 	}
 
 
@@ -64,9 +65,101 @@ var JADOBE_ENVIRONMENT = window,		//Change to match your environments global obj
 	// Returns: 	BOOLEAN 	true/false (success/fail)	
 	//=============================================================================
 	jadobe.cmd = function(cmd){
-		var tokens = tokenize(cmd);
-		console.log(tokens);
+		var tokens = [],		//List of tokens without flags
+			flags = [];			//List of flags with the flags
 
+		///============================================================================
+		// Tokenize and extract flags
+		//=============================================================================
+		tokens = tokenize(cmd);
+		for(var i = 0; i < tokens.length; i++){
+			if(tokens[i][0] === '-'){
+				flags.push(tokens[i].substring(1, tokens[i].length));	//Grab the flag, without the hyphen-minus
+				tokens.splice(i, 1);	//Remove the flag from the token
+				i -= 1;
+			}
+		}
+
+		///============================================================================
+		// Find a matching command
+		// 
+		// We will check all commands and their aliases.
+		// If an alias is matched, we need to keep searching incase a command with a
+		// similar name is found.
+		//=============================================================================
+		var command, 	//The command object matched
+			alias;		//The command object of the alias matched.
+		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		// Look through each command
+		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		for(i = 0; i < commands.length; i++){
+			//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+			// Look through each token
+			//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+			for(var k = 0; k < commands[i].tokens.length; k++){
+				if(commands[i].tokens[k] === tokens[0]){
+					if(k === 0) {
+						command = commands[i];
+						break;
+					} else alias = commands[i];
+				}
+			}
+		}
+
+		///============================================================================
+		// Warning if no command found
+		//=============================================================================
+		if(!(command = command || alias)) {
+			jadobe.warning('Warning 008: Command not loaded > ', tokens[0]);
+			return false;
+		}
+
+		///============================================================================
+		// Validate flags
+		//=============================================================================
+		var extraFlags = [],	//List of flags not defined by the extension
+			foundFlag = false;	//Determines if a match was found
+		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		// Look through user inputed flags
+		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		for(i = 0; i < flags.length; i++){
+			foundFlag = false;
+			//console.log(flags[i]);
+			//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+			// Look through commands defined flags
+			//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+			for(k = 0; k < command.flags.length; k++){
+				if(flags[i] === command.flags[k]){
+					foundFlag = true;
+					break;
+				}
+			}
+
+			///============================================================================
+			// If no match was found, extract the flag from flags into extraFlags
+			//=============================================================================
+			if(!foundFlag){
+				extraFlags.push( flags.splice(i, 1)[0] );
+				i -= 1;
+			} 
+		}
+
+		///============================================================================
+		// Warning if we have extra flags and the strictMode is set
+		//=============================================================================
+		if(command.strictMode && extraFlags.length > 0){
+			jadobe.warning('Warning 007: Unknown flags > ', extraFlags);
+			return false;
+		}
+
+		///============================================================================
+		// Finally build the object, and pass it to the run event
+		//=============================================================================
+		command.run({
+			tokens: 		tokens,
+			flags: 			flags,
+			extraFlags: 	extraFlags
+		});
 
 		return true;
 	};
@@ -150,6 +243,14 @@ var JADOBE_ENVIRONMENT = window,		//Change to match your environments global obj
 		}
 
 		///============================================================================
+		// Setup Defaults
+		//=============================================================================
+		cmd.flags = tokenize(cmd.flags || '');
+		cmd.strictMode = cmd.strictMode || jadobe.security.strictMode;
+		cmd.protected = cmd.protected || jadobe.security.protected;
+
+
+		///============================================================================
 		// Add the command
 		//=============================================================================
 		if(!isDuplicate) commands.push(cmd);
@@ -157,7 +258,7 @@ var JADOBE_ENVIRONMENT = window,		//Change to match your environments global obj
 			//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 			// Warning if this command is protected
 			//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			if(commands[i].protected || jadobe.security.protectCommands){
+			if(commands[i].protected){
 				jadobe.warning('Warning 006: Command cannot be overwritten > ', commands[i].command);
 				initialize = false;
 			//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -313,6 +414,7 @@ var JADOBE_ENVIRONMENT = window,		//Change to match your environments global obj
 
 		return tokens
 	}
+
 
 
 /*###########################################################################*/
