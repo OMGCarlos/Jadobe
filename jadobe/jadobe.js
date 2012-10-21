@@ -66,13 +66,25 @@ var JADOBE_ENVIRONMENT = window,		//Change to match your environments global obj
 	//=============================================================================
 	jadobe.cmd = function(cmd){
 		var tokens = [],		//List of tokens without flags
-			flags = [];			//List of flags with the flags
+			flags = [],			//List of flags with the flags
+			queriedHelp = false;	//Determines is asking for help through ?
 
 		///============================================================================
 		// Tokenize and extract flags
 		//=============================================================================
 		tokens = tokenize(cmd);
 		for(var i = 0; i < tokens.length; i++){
+			//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+			// Halt on question mark
+			//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+			if(tokens[i] === '?') {
+				queriedHelp = true;
+				break;
+			}
+
+			//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+			// Extract Flags
+			//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 			if(tokens[i][0] === '-'){
 				flags.push(tokens[i].substring(1, tokens[i].length));	//Grab the flag, without the hyphen-minus
 				tokens.splice(i, 1);	//Remove the flag from the token
@@ -111,6 +123,12 @@ var JADOBE_ENVIRONMENT = window,		//Change to match your environments global obj
 		//=============================================================================
 		if(!(command = command || alias)) {
 			jadobe.warning('Warning 008: Command not loaded > ', tokens[0]);
+			return false;
+		///============================================================================
+		// Exit and show help
+		//=============================================================================
+		} else if(queriedHelp) {
+			jadobe.log(command.help);
 			return false;
 		}
 
@@ -248,6 +266,7 @@ var JADOBE_ENVIRONMENT = window,		//Change to match your environments global obj
 		cmd.flags = tokenize(cmd.flags || '');
 		cmd.strictMode = cmd.strictMode || jadobe.security.strictMode;
 		cmd.protected = cmd.protected || jadobe.security.protected;
+		cmd.help = cmd.help || 'Sorry, no help was found for this command.';
 
 
 		///============================================================================
@@ -406,7 +425,7 @@ var JADOBE_ENVIRONMENT = window,		//Change to match your environments global obj
 			//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 			if(i === str.length-1){
 				if(chr === ' ') chr = '';
-				if(token.replace(/\s/g, "") !== '') tokens.push(token + chr);
+				if((token + chr).replace(/\s/g, "") !== '') tokens.push(token + chr);
 			}
 
 			token += chr;

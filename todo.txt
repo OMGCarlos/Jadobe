@@ -1,13 +1,10 @@
-///============================================================================
-// 						To Do
-//=============================================================================
+CORE:
+-----
+* help command
+* help text
 
-jadobe.extend() - extend Jadobe
-	add the command to the list
-	pre-tokenize the string
-	initilization function
-	completion function
-	execution function
+
+
 
 
 ///============================================================================
@@ -23,8 +20,6 @@ env: enter an environment. Commands are then handled by the environment (ie, reg
 ///============================================================================
 // 						STRUCTURE
 //=============================================================================
-
-Use ' ' when entering strings with spaces. Quotes anywhere in the command line is illegal.
 
 command [parameters] [source] [destination] [ > | >> | < | \| | &] [source]
 
@@ -58,17 +53,3 @@ command1 | command2
 is similar as doing the following:
 	command1 > file
 	command2 < file
-
-
-///============================================================================
-// 						Kickstarter
-//=============================================================================
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// 						Gifts
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-$5 
-$10
-$25
-$50
-$
