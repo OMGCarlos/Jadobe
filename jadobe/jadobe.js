@@ -436,6 +436,22 @@ var JADOBE_ENVIRONMENT = window,		//Change to match your environments global obj
 		return tokens;
 	}
 
+	///============================================================================
+	// Determines if the passed flag is available
+	//=============================================================================
+	jadobe.inArray = function(obj, arr){
+		for(var i = 0; i < arr.length; i++){
+			if(arr[i] === obj) return true;
+		}
+		return false;
+	}
+
+	///============================================================================
+	// Displays a list of all the commands
+	//=============================================================================
+	jadobe.help = function(){
+	}
+
 
 
 /*###########################################################################*/
@@ -478,16 +494,4 @@ var JADOBE_ENVIRONMENT = window,		//Change to match your environments global obj
 		}
 
 	}
-
-
-	///============================================================================
-	// Checks if an object is empty
-	// 
-	// Arguments: 	OBJECT 		obj 	The obejct to check
-	// Returns: 	BOOLEAN 	True if empty, false if not
-	//=============================================================================
-	function isEmpty(obj){
-		for(var prop in obj){return false;} return true;
-	}
-
 })(JADOBE_ENVIRONMENT.jadobe = JADOBE_ENVIRONMENT.jadobe || {})
