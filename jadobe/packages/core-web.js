@@ -14,7 +14,7 @@
 |
 |******************************************************************************
 |
-| 	This package contains a list of commands that make the surfing the net easier,
+| 	This package contains a list of commands that make surfing the net easier,
 |		as well as the very useful runquerystring process. This package will allow
 |		you to do the following:
 |
@@ -31,7 +31,9 @@
 //=============================================================================
 jadobe.extend({
 	command: 'runquerystring run?$',
-	help: 'Scans the URL for a query string key labeled "jadobe" and executes its value as the command line',
+	help: 'Scans the URL for a query string key labeled "jadobe" and executes its value as the command line\n\n\
+ALIAS:\n\
+	run?$\n',
 	loaded: function(){
 		///============================================================================
 		// Grab the command line from the query
@@ -59,8 +61,8 @@ jadobe.extend({
 If multiple URLs are provided the first will open in the same tab, with the\n\
 rest opening in separate tabs.\n\n\
 URLs are relative. So \\admin will load the admin page of the current domain.\n\n\
-Flag: -n\n\
-Will open ALL URLs in [-n]ew tabs.',
+FLAGS:\n\
+	-n: Will open ALL URLs in [-n]ew tabs.\n',
 
 	run: function(cmd){
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

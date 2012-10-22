@@ -77,7 +77,7 @@ var JADOBE_ENVIRONMENT = window,		//Change to match your environments global obj
 			//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 			// Halt on question mark
 			//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			if(tokens[i] === '?') {
+			if(i !== 0 && tokens[i] === '?') {
 				queriedHelp = true;
 				break;
 			}
@@ -449,7 +449,8 @@ var JADOBE_ENVIRONMENT = window,		//Change to match your environments global obj
 	///============================================================================
 	// Displays a list of all the commands
 	//=============================================================================
-	jadobe.help = function(){
+	jadobe.commands = function(){
+		return commands;
 	}
 
 
