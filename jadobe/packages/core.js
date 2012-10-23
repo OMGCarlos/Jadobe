@@ -38,12 +38,12 @@ FLAGS:\n\
 		// Display Commands
 		//=============================================================================
 		var commands = jadobe.commands().sort(),
-			verbose = jadobe.inArray('v', cmd.flags);
+			verbose = jadobe.indexOf('v', cmd.flags);
 		for(var i = 0; i < commands.length; i++){
 			//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 			// Verbose
 			//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			if(verbose) jadobe.log( '[ ' + commands[i].tokens[0] + ' ]\n' + commands[i].help + '\n=============================================================================\n');
+			if(verbose !== -1) jadobe.log( '[ ' + commands[i].tokens[0] + ' ]\n' + commands[i].help + '\n=============================================================================\n');
 			//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 			// Simple
 			//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

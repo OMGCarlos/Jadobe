@@ -61,18 +61,37 @@ var JADOBE_ENVIRONMENT = window,		//Change to match your environments global obj
 	///============================================================================
 	// Command Line
 	// 
-	// Arguments: 	STRING 	 	cmd 	Command to parse
-	// Returns: 	BOOLEAN 	true/false (success/fail)	
+	// Arguments: 	STRING/ARRAY 	cmd 	Command to execute (in either string or tokenized array)
+	// Returns: 	BOOLEAN 		true/false (success/fail)	
 	//=============================================================================
 	jadobe.cmd = function(cmd){
 		var tokens = [],		//List of tokens without flags
 			flags = [],			//List of flags with the flags
 			queriedHelp = false;	//Determines is asking for help through ?
 
+
 		///============================================================================
-		// Tokenize and extract flags
+		// Tokenize (or not)
 		//=============================================================================
-		tokens = tokenize(cmd);
+		if(typeof cmd === 'string') tokens = tokenize(cmd);
+		else tokens = cmd;
+
+
+		///============================================================================
+		// Check for multiple commands. If we find them, send them through this method
+		// one at at time.
+		// 
+		// & chains commands
+		//=============================================================================
+		var index;
+		while( ( index = jadobe.indexOf('&', tokens) ) > 0){
+			jadobe.cmd(cmd = tokens.splice(0, index));	//Execute the first command
+			tokens = tokens.slice(1);		//Skip over the &
+		}
+
+		///============================================================================
+		// Extract Flags
+		//=============================================================================
 		for(var i = 0; i < tokens.length; i++){
 			//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 			// Halt on question mark
@@ -437,13 +456,13 @@ var JADOBE_ENVIRONMENT = window,		//Change to match your environments global obj
 	}
 
 	///============================================================================
-	// Determines if the passed flag is available
+	// Checks if an array contains an object
 	//=============================================================================
-	jadobe.inArray = function(obj, arr){
+	jadobe.indexOf = function(obj, arr){
 		for(var i = 0; i < arr.length; i++){
-			if(arr[i] === obj) return true;
+			if(arr[i] === obj) return i;
 		}
-		return false;
+		return -1;
 	}
 
 	///============================================================================

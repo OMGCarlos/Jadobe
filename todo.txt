@@ -23,11 +23,11 @@ env: enter an environment. Commands are then handled by the environment (ie, reg
 
 command [parameters] [source] [destination] [ > | >> | < | \| | &] [source]
 
+< executes the command with the source used as input
+
 > is used to redirect output to destination (can be a file or DOM object). Destination gets clobbered.
 
 >> is used to appened output to destination.
-
-< executes the command with the source used as input
 
 | run two commands together. Command 1 gets executed, with its output used as input for command2
 
