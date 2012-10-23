@@ -29,6 +29,7 @@ jadobe.extend({
 	flags: 'v',
 	help: 'Displays a list of all available commands. To get help on specific\n\
 commands, enter the command or its alias followed a ?.\n\n\
+- - - - - - - - - -\n\
 FLAGS:\n\
 	-v : [-v]erbose mode. Will display a detailed overview of all available\n\
 			commands.\n', 

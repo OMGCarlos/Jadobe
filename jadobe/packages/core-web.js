@@ -32,6 +32,7 @@
 jadobe.extend({
 	command: 'runquerystring run?$',
 	help: 'Scans the URL for a query string key labeled "jadobe" and executes its value as the command line\n\n\
+- - - - - - - - - -\n\
 ALIAS:\n\
 	run?$\n',
 	loaded: function(){
@@ -59,10 +60,26 @@ jadobe.extend({
 
 	help: 'Navigates to the new URL in the same tab by default.\n\
 If multiple URLs are provided the first will open in the same tab, with the\n\
-rest opening in separate tabs.\n\n\
-URLs are relative. So \\admin will load the admin page of the current domain.\n\n\
+rest opening in separate tabs.\n\
+\n\
+URLs are relative.\n\
+\n\
+The following modifiers are available:\n\
+A * token will be replaced with the current URL.\n\
+[*] gets replaced with the current URL.\n\
+[!] gets replaced with the root URL.\n\n\
+- - - - - - - - - -\n\
 FLAGS:\n\
-	-n: Will open ALL URLs in [-n]ew tabs.\n',
+	-n: Will open ALL URLs in [-n]ew tabs.\n\n\
+- - - - - - - - - -\n\
+EXAMPLES:\n\
+url *\n\
+ > refresh current page\n\n\
+url http://jadobe.com [!]/manual/url\n\
+ > loads Jadobe in the current window, and opens ROOT/manual/url in a tab\n\n\
+url -n *\n\
+ > loads the current page in a new tab\n\
+',
 
 	run: function(cmd){
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -73,21 +90,22 @@ FLAGS:\n\
 			return false;
 		}
 
+		var newTab = jadobe.indexOf('n', cmd.flags) !== -1 ? '_newtab' : '_self';	//Set the location of the first URL
+
 		///============================================================================
-		// Load URLs
+		// Parse the URLs for special cases, and then execute them
+		// 
+		// A * token will be replaced with the current url
+		// [*] replaced with current URL
+		// [!] replaced with root URL
 		//=============================================================================
-		var newTab = jadobe.indexOf('n', cmd.flags) !== -1 ? '_newtab' : '_self';
+		for(var i = 1; i < cmd.tokens.length; i++){
+			cmd.tokens[i] = cmd.tokens[i] === '*' ? document.URL : cmd.tokens[i];						// *
+			cmd.tokens[i] = cmd.tokens[i].replace(/\[\*\]/g, document.URL)								// [*]
+										 .replace(/\[\!\]/g, document.URL.match(/:\/\/(.[^/]+)/)[1] );	//[!]
 
-		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		// Multiple URL
-		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		for(var i = 2; i < cmd.tokens.length; i++){
-			window.open(cmd.tokens[i], '_newtab'+i);
+			if(i === 1) window.open(cmd.tokens[i], newTab);
+			else window.open(cmd.tokens[i], newTab + i);
 		}
-
-		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		// Single URL
-		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		window.open(cmd.tokens[1], newTab);
 	}
 })
