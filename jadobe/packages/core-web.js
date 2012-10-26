@@ -10,15 +10,14 @@
 |
 |******************************************************************************
 |
-| 							CORE: WEB Extensions
+| 							CORE: WEB
 |
 |******************************************************************************
 |
-| 	This package contains a list of commands that make surfing the net easier,
-|		as well as the very useful runquerystring process. This package will allow
-|		you to do the following:
+| 	This package is an extension of CORE, specifically for the web environment.
 |
 |		* Enter commands through the URL
+|		* Change URL
 |
 =============================================================================*/
 
